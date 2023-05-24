@@ -1,0 +1,124 @@
+### Data Source 
+1. Airline_Delay_Cause.csv
+	https://www.kaggle.com/datasets/jawadkhattak/us-flight-delay-from-january-2017-july-2022
+2. T_F41SCHEDULE_B1.csv
+	https://transtats.bts.gov/DL_SelectFields.aspx?gnoyr_VQ=FKM&QO_fu146_anzr=Nv4%20Pn44vr4%20Sv0n0pvny
+3. T_SCHEDULE_T3.csv
+	https://www.transtats.bts.gov/DL_SelectFields.aspx?gnoyr_VQ=FKG&QO_fu146_anzr=Nv4%20Pn44vr4%20f7zzn4B
+4. T_T100_MARKET_ALL_CARRIER
+	https://www.transtats.bts.gov/DL_SelectFields.aspx?gnoyr_VQ=FMF&QO_fu146_anzr=Nv4%20Pn44vr45
+(* These four data files can be seen in forder 'original dataset')
+
+### Data Description
+1. https://www.bts.dot.gov/explore-topics-and-geography/topics/airline-time-performance-and-causes-flight-delays
+2. https://www.bts.gov/topics/airlines-and-airports/understanding-reporting-causes-flight-delays-and-cancellations
+
+### Data for Modeling and Analysis:
+(* We create four datasets for analysis, which can be seen in folder 'Data for Analysis')
+
+### How we get these four datasets (10 tables in model):
+1. Table 1: delay.
+	From Airline_Delay_Cause.csv:
+		id (PK)
+		year
+		month
+		carrier_id (FK)
+		airport_id (FK)
+		arr_flights: Number of flights arriving at airport
+		arr_del15: Number of flights more than 15 minutes late
+		carrier_ct: Number of flights delayed due to air carrier. (e.g. no crew)
+		weather_ct: Number of flights due to weather.
+		nas_ct: Number of flights delayed due to National Aviation System (e.g. heavy air traffic).
+		arr_delay:Total time (minutes) of delayed flight.
+		carrier_delay: Total time (minutes) of delay due to air carrier
+		weather_delay: Total time (minutes) of delay due to inclement weather.
+		nas_delay: Total time (minutes) of delay due to National Aviation System.
+		security_delay: Total time (minutes) of delay as a result of a security issue.
+		lateaircraftdelay: Total time (minutes) of delay flights as a result of a previous flight on the same airplane being late.
+		security_ct: Number of flights canceled due to a security breach.
+		lateaircraftct;Number of flights delayed as a result of another flight on the same aircraft delayed
+		arr_cancelled: Number of cancelled flights
+		arr_diverted: Number of flights that were diverted
+
+2. Table 2: carrier
+	carrier_id (PK)
+	From Airline_Delay_Cause.csv:
+		carrier_code
+		carrier_name 
+	From T_T100_MARKET_ALL_CARRIER.csv:
+		carrier_group: change to carrier_group_code (FK to table 8)
+
+3. Table 3: airport
+		airport_id (PK)
+	From airline_delay_cause.csv:
+		airport_code
+		airport_name
+	From T_SCHEDULE_T3.csv:
+		airport_code: Unique code for each airport
+		airport_type: change to airport_type_code (FK to table 10)
+		city_name
+		dep_performed: (total departures performed)
+		freight: Total Fieight (tons)
+		mail: Total Mail (tons)
+
+4. Table 4: carrier_financial_report 
+		financial_report_id (PK): Unique financial statement id 
+		carrier_id (FK) : Unique carrier id for financial statement
+		quarter: quarter time of the reported financial statement (range:1-4)
+		year: year of the reported statement financial statement
+	From T_F41SCHEDULE_B1.csv:
+		cash: Total Cash 
+		calculate the following columns:
+		ACCTS_PAY_OTHER: Total Short-Term Accounts Payables (Other)
+		LIAB_AIR_TRAFFIC: Total Operating Liabilities on Air Traffic 
+		LIAB_SH_HLD_EQUITY: Total Liabilities and Stockholders' Equity
+
+*. Table 5: carrier_has_service_class (used to connect table 2 & table 9)
+		carrier_id (FK)
+	From T_T100_MARKET_ALL_CARRIER.csv:
+		service_code: (FK)
+
+*. Table 6: carrier_has_region (used to connect table 2 & table 7)
+		carrier_id (FK)
+	From T_T100_MARKET_ALL_CARRIER.csv:
+		carrier_region_code(FK)
+
+*. Table 7: carrier_region
+Code	Description
+A	Atlantic
+D	Domestic
+I	International
+L	Latin America
+P	Pacific
+S	System
+
+*. Table 8: carrier_group
+Code	Description
+0	International Carriers
+1	Regional Carriers (including Large, Medium, Commuter, Small Certified)
+2	National Carriers
+3	Major Carriers
+7	Domestic Only - All Cargo Carriers
+
+*. Table 9: service_class
+Code	Description
+A	Scheduled First Class Passenger/ Cargo Service A
+C	Scheduled Coach Passenger/ Cargo Service C
+E	Scheduled Mixed First Class And Coach, Passenger/ Cargo Service E
+F	Scheduled Passenger/ Cargo Service F
+G	Scheduled All Cargo Service G
+H	Humane Reason Unscheduled, Non-Revenue-Generating
+K	Scheduled Service K (F+G)
+L	Non-Scheduled Civilian Passenger/ Cargo Service L
+N	Non-Scheduled Military Passenger/ Cargo Service N
+P	Non-Scheduled Civilian All Cargo Service P
+Q	Non-Scheduled Services (Other Than Charter) Q
+R	Non-Scheduled Military All Cargo R
+V	Non-Scheduled Service V (L+N+P+R) For U.S. Carrier And (L+P+Q) For Foreign Carrier
+Z	All Service Z (K+V)
+
+*. Table 10: airport_type
+Code	Description
+D	Domestic
+I	International
+
